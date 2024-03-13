@@ -44,23 +44,21 @@ done
 
 # Future scenarios (conceptual example, adjust as necessary)
 # Assuming a simplified pattern for demonstration purposes
-models=("gfdl-esm4" "ipsl-cm6a-lr" "mri-esm2-0" "ukesm1-0-ll" "mpi-esm1-2-hr")
+models=("gfdl-esm4" "ipsl-cm6a-lr" "mri-esm2-0" "ukesm1-0-ll")
 scenarios=("ssp126" "ssp585")
 time_slices=("2011-2040" "2041-2070" "2071-2100")
-for month in {01..12}; do
+
 for model in ${models[@]}; do
     for scenario in ${scenarios[@]}; do
         for time_slice in ${time_slices[@]}; do
             # Adjust this URL pattern according to the actual file naming conventions
             # This is a placeholder example and will not directly work without modification
             ensemble_member="r1i1p1f1"
-            [[ "$model" == "ukesm1-0-ll" ]] && ensemble_member="r1i1p1f1"
-            url="${base_url}/${time_slice}/${model^^}/${scenario}/tas/CHELSA_${model}_${ensemble_member}_w5e5_${scenario}_tas_${month}_${time_slice//-/_}_norm.tif"
+            [[ "$model" == "ukesm1-0-ll" ]] && ensemble_member="r1i1p1f2"
+            url="${base_url}/${time_slice}/${model^^}/${scenario}/tas/CHELSA_${model}_${ensemble_member}_w5e5_${scenario}_tas_01_${time_slice//-/_}_norm.tif"
             download_and_crop "$url"
-	    rm ${output_dir}/CHELSA_*.tif
         done
     done
 done
-done #month
 
 echo "All processes complete."
