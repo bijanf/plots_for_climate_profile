@@ -215,7 +215,8 @@ fig.subplots_adjust(bottom=0.5)
 cb1 = ColorbarBase(ax, cmap=cmap,
                    norm=norm,
                    orientation='horizontal')
-cb1.set_label('Temperature Anomaly (°C)')
+cb1.set_label('Temperature Anomaly (°C)' , fontsize=20)
+cb1.ax.tick_params(labelsize=20)
 plt.savefig('colorbar.png', dpi=300, bbox_inches='tight')
 plt.close(fig)
 
@@ -272,6 +273,7 @@ if plot_historical:
     fig.subplots_adjust(bottom=0.5)
 
     cb1_hist = ColorbarBase(ax, cmap=cmap_hist, norm=norm_hist, orientation='horizontal')
-    cb1_hist.set_label('Temperature (°C)')
+    cb1_hist.set_label('Temperature (°C)' , fontsize=20)
+    cb1_hist.ax.tick_params(labelsize=20)
     plt.savefig('colorbar_historical.png', dpi=300, bbox_inches='tight')
     plt.close(fig)

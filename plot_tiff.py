@@ -27,7 +27,8 @@ def download_and_unzip_shapefiles(url, extract_to='.'):
         zipfile.extractall(extract_to)
         print("Files extracted to", extract_to)
     else:
-        print("Error while downloading shapefile. Status Code: ", response.status_code)
+        print("Error while downloading shapefile. Status Code: ",
+              response.status_code)
 
 # Download Turkmenistan shapefiles
 gadm_url = 'https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_'+country+'_shp.zip'
@@ -43,11 +44,13 @@ shapefile1 = gpd.read_file(shapefile_path1).to_crs(epsg=4326)
 
 scale = 0.1
 offset = -273.15
-
+vmin=-2
+vmax=2
 def load_and_adjust_tiff(tiff_path, scale, offset, shapefile):
     with rasterio.open(tiff_path) as src:
         # Mask the raster with the given shapefile, cropping to its extent
-        out_image, out_transform = rasterio.mask.mask(src, shapefile.geometry, crop=True, nodata=src.nodata)
+        out_image, out_transform = rasterio.mask.mask(src,
+                                                       shapefile.geometry, crop=True, nodata=src.nodata)
 
         # Apply scale and offset if needed
         if src.nodata is not None:
@@ -63,13 +66,24 @@ tiff_files = [
     'data/cropped_CHELSA_mri-esm2-0_r1i1p1f1_w5e5_ssp126_tas_05_2041_2070_norm.tif',
     'data/cropped_CHELSA_ukesm1-0-ll_r1i1p1f1_w5e5_ssp126_tas_05_2041_2070_norm.tif'
 ]
+historical_tiff_file = 'data/cropped_CHELSA_tas_05_1981-2010_V.2.1.tif'
+
+
+
 
 # Adjust these based on your TIFF metadata
 scale = 0.1
 offset = -273.15
 
 # Load and adjust each TIFF, then store the result
-datasets = [load_and_adjust_tiff(tiff, scale, offset, shapefile) for tiff in tiff_files]
+datasets = [load_and_adjust_tiff(tiff, scale,
+                                  offset, shapefile) for tiff in tiff_files]
+historical_dataset = load_and_adjust_tiff(historical_tiff_file,
+                                          scale, offset, shapefile)
+# Calculate anomalies for each future projection dataset
+anomaly_datasets = [dataset - historical_dataset for dataset in datasets]
+# Calculate ensemble mean of anomalies
+ensemble_mean_anomaly = np.nanmean(anomaly_datasets, axis=0)
 
 # Calculate ensemble mean
 ensemble_mean = np.nanmean(datasets, axis=0)
@@ -104,10 +118,15 @@ fig, ax = plt.subplots(figsize=(10, 10), subplot_kw={'projection': ccrs.PlateCar
 ax.set_extent([bounds[0], bounds[2], bounds[1], bounds[3]], crs=ccrs.PlateCarree())
 
 cmap = plt.colormaps['coolwarm']  # Updated colormap access
-norm = Normalize(vmin=np.nanmin(ensemble_mean), vmax=np.nanmax(ensemble_mean))
-raster_plot = ax.imshow(ensemble_mean.squeeze(),
-                         cmap=cmap, norm=norm, extent=[bounds[0], bounds[2], bounds[1], bounds[3]],
-                         transform=ccrs.PlateCarree(), zorder=0)
+# Update the plotting code to use ensemble_mean_anomaly
+norm = Normalize(vmin=vmin, vmax=vmax)
+raster_plot = ax.imshow(ensemble_mean_anomaly.squeeze(),
+                        cmap=cmap, norm=norm, extent=[bounds[0],
+                                                       bounds[2], bounds[1], bounds[3]],
+                        transform=ccrs.PlateCarree(), zorder=0)
+
+
+
 
 # Adding the shapefile
 shape_feature = ShapelyFeature(shapefile1.geometry, ccrs.PlateCarree(),
@@ -122,7 +141,9 @@ ax.set_yticks([])
 
 # Add colorbar
 cbar = fig.colorbar(raster_plot, ax=ax, orientation='vertical', shrink=0.8, aspect=20, extend='both')
-cbar.set_label('Temperature (°C)', fontsize=12)
-
+# Update colorbar label
+cbar.set_label('Temperature Anomaly (°C)', fontsize=12)
+#cbar.set_label('Temperature (°C)', fontsize=12)
+plt.savefig('ensemble_mean.png', dpi=300, bbox_inches='tight')
 plt.show()
 os.system('rm -rf ./gadm36_*_*.*')
