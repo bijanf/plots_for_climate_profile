@@ -1,12 +1,12 @@
 #!/bin/bash
-set -e 
+set -e
 # Base URL for CHELSA data
 base_url="https://os.zhdk.cloud.switch.ch/envicloud/chelsa/chelsa_V2/GLOBAL/climatologies"
 
 # Directory to store downloaded and cropped files
 output_dir="./downloaded_files"
 mkdir -p "$output_dir"
-
+variable="tas"  # Temperature
 # Bounding box coordinates for cropping
 lat_min=33
 lat_max=56.5
@@ -38,7 +38,7 @@ download_and_crop() {
 # Example download: Historical data (adjust URLs as needed)
 historical_months=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12")
 for month in ${historical_months[@]}; do
-    url="${base_url}/1981-2010/tas/CHELSA_tas_${month}_1981-2010_V.2.1.tif"
+    url="${base_url}/1981-2010/${variable}/CHELSA_${variable}_${month}_1981-2010_V.2.1.tif"
     download_and_crop "$url"
 done
 
@@ -55,7 +55,7 @@ for model in ${models[@]}; do
             # This is a placeholder example and will not directly work without modification
             ensemble_member="r1i1p1f1"
             [[ "$model" == "ukesm1-0-ll" ]] && ensemble_member="r1i1p1f1"
-            url="${base_url}/${time_slice}/${model^^}/${scenario}/tas/CHELSA_${model}_${ensemble_member}_w5e5_${scenario}_tas_${month}_${time_slice//-/_}_norm.tif"
+            url="${base_url}/${time_slice}/${model^^}/${scenario}/${variable}/CHELSA_${model}_${ensemble_member}_w5e5_${scenario}_${variable}_${month}_${time_slice//-/_}_norm.tif"
             download_and_crop "$url"
 	    rm ${output_dir}/CHELSA_*.tif
         done

@@ -196,7 +196,7 @@ ax.set_yticks([])
 #cbar = fig.colorbar(raster_plot, ax=ax, orientation='vertical', shrink=0.8, aspect=20, extend='both')
 ## Update colorbar label
 #cbar.set_label('Temperature Anomaly (°C)', fontsize=12)
-filename = f'ensemble_mean_{scenario}_{years_range_future}_{country}.png'
+filename = f'pngs/ensemble_mean_{scenario}_{years_range_future}_{country}.png'
 plt.savefig(filename, dpi=300, bbox_inches='tight')
 plt.close(fig)  # Close the figure to free memory
 os.system('rm -rf ./gadm36_*_*.*')
@@ -217,7 +217,7 @@ cb1 = ColorbarBase(ax, cmap=cmap,
                    orientation='horizontal')
 cb1.set_label('Temperature Anomaly (°C)' , fontsize=20)
 cb1.ax.tick_params(labelsize=20)
-plt.savefig('colorbar.png', dpi=300, bbox_inches='tight')
+plt.savefig('pngs/colorbar.png', dpi=300, bbox_inches='tight')
 plt.close(fig)
 
 
@@ -264,7 +264,7 @@ if plot_historical:
     #cbar_hist.set_label('Temperature (°C)', fontsize=12)
 
     # Save the plot
-    filename_hist = f'absolute_historical_{years_range_historical}_{country}.png'
+    filename_hist = f'pngs/absolute_historical_{years_range_historical}_{country}.png'
     plt.savefig(filename_hist, dpi=300, bbox_inches='tight')
     plt.close(fig)  # Close the figure to free memory
 
@@ -275,5 +275,5 @@ if plot_historical:
     cb1_hist = ColorbarBase(ax, cmap=cmap_hist, norm=norm_hist, orientation='horizontal')
     cb1_hist.set_label('Temperature (°C)' , fontsize=20)
     cb1_hist.ax.tick_params(labelsize=20)
-    plt.savefig('colorbar_historical.png', dpi=300, bbox_inches='tight')
+    plt.savefig('pangs/colorbar_historical.png', dpi=300, bbox_inches='tight')
     plt.close(fig)

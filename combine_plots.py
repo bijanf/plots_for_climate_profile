@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 country = sys.argv[1] if len(sys.argv) > 1 else 'TJK'  # Default to 'TJK' if not specified
 image_files = [
 
-    'absolute_historical_1981-2010_'+country+'.png',
-    'ensemble_mean_ssp126_2041_2070_'+country+'.png',
-    'ensemble_mean_ssp126_2071_2100_'+country+'.png',
-    'ensemble_mean_ssp585_2041_2070_'+country+'.png',
-    'ensemble_mean_ssp585_2071_2100_'+country+'.png',
+    'pngs/absolute_historical_1981-2010_'+country+'.png',
+    'pngs/ensemble_mean_ssp126_2041_2070_'+country+'.png',
+    'pngs/ensemble_mean_ssp126_2071_2100_'+country+'.png',
+    'pngs/ensemble_mean_ssp585_2041_2070_'+country+'.png',
+    'pngs/ensemble_mean_ssp585_2071_2100_'+country+'.png',
 
 
 
@@ -26,9 +26,9 @@ image_files = [
 
 colorbar_files = [
 
-    'colorbar.png',  # Anomalies colorbar
+    'pngs/colorbar.png',  # Anomalies colorbar
 
-    'colorbar_historical.png',  # Historical colorbar
+    'pngs/colorbar_historical.png',  # Historical colorbar
 
 ]
 
@@ -76,9 +76,9 @@ axs[-1].axis('off')
 plt.tight_layout()
 
 # Save the figure with titles
-fig.savefig('combined_figure_with_titles_'+country+'.png', dpi=300)
+fig.savefig('pngs/combined_figure_with_titles_'+country+'.png', dpi=300)
 plt.close()
 
 # Return the path to the saved figure with titles
-combined_figure_with_titles_path = 'combined_figure_with_titles_'+country+'.png'
+combined_figure_with_titles_path = 'pngs/combined_figure_with_titles_'+country+'.png'
 combined_figure_with_titles_path
