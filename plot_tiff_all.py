@@ -24,7 +24,9 @@ default_years_range_future = "2041_2070"
 vmin=1
 vmax=6.5
 N = 11
-cmaps='Reds'
+#cmaps='Reds'
+cmaps='Blues'
+variable="pr"
 country = sys.argv[1] if len(sys.argv) > 1 else default_country
 scenario = sys.argv[2] if len(sys.argv) > 2 else default_scenario
 years_range_future = sys.argv[3] if len(sys.argv) > 3 else default_years_range_future
@@ -60,8 +62,8 @@ shapefile_path1 = './gadm36_'+country+'_1.shp'
 shapefile1 = gpd.read_file(shapefile_path1).to_crs(epsg=4326)
 
 scale = 0.1
-offset = -273.15
-
+#offset = -273.15
+offset = 0.0
 def load_and_adjust_tiff(tiff_path, scale, offset, shapefile):
     with rasterio.open(tiff_path) as src:
         # Mask the raster with the given shapefile, cropping to its extent
@@ -84,10 +86,10 @@ def construct_file_paths(base_pattern, years_range, models, month, scenario=""):
     return [base_pattern.format(years_range=years_range, model=model, month=str(month).zfill(2), scenario=scenario) for model in models]
 
 # Future projections file paths for each month and model
-future_tiff_base_pattern = 'data/cropped_CHELSA_{model}_r1i1p1f1_w5e5_{scenario}_tas_{month}_{years_range}_norm.tif'
+future_tiff_base_pattern = 'data/cropped_CHELSA_{model}_r1i1p1f1_w5e5_{scenario}_{variable}_{month}_{years_range}_norm.tif'
 
 # Historical reference file paths for each month
-historical_tiff_base_pattern = 'data/cropped_CHELSA_tas_{month}_{years_range}_V.2.1.tif'
+historical_tiff_base_pattern = 'data/cropped_CHELSA_{variable}_{month}_{years_range}_V.2.1.tif'
 
 monthly_anomalies = []
 for month in range(1, 13):
@@ -196,7 +198,7 @@ ax.set_yticks([])
 #cbar = fig.colorbar(raster_plot, ax=ax, orientation='vertical', shrink=0.8, aspect=20, extend='both')
 ## Update colorbar label
 #cbar.set_label('Temperature Anomaly (°C)', fontsize=12)
-filename = f'pngs/ensemble_mean_{scenario}_{years_range_future}_{country}.png'
+filename = f'pngs/ensemble_mean_{scenario}_{years_range_future}_{country}_{variable}.png'
 plt.savefig(filename, dpi=300, bbox_inches='tight')
 plt.close(fig)  # Close the figure to free memory
 os.system('rm -rf ./gadm36_*_*.*')
@@ -217,7 +219,7 @@ cb1 = ColorbarBase(ax, cmap=cmap,
                    orientation='horizontal')
 cb1.set_label('Temperature Anomaly (°C)' , fontsize=20)
 cb1.ax.tick_params(labelsize=20)
-plt.savefig('pngs/colorbar.png', dpi=300, bbox_inches='tight')
+plt.savefig(f'pngs/colorbar_{variable}.png', dpi=300, bbox_inches='tight')
 plt.close(fig)
 
 
@@ -264,7 +266,7 @@ if plot_historical:
     #cbar_hist.set_label('Temperature (°C)', fontsize=12)
 
     # Save the plot
-    filename_hist = f'pngs/absolute_historical_{years_range_historical}_{country}.png'
+    filename_hist = f'pngs/absolute_historical_{years_range_historical}_{country}_{variable}.png'
     plt.savefig(filename_hist, dpi=300, bbox_inches='tight')
     plt.close(fig)  # Close the figure to free memory
 
@@ -275,5 +277,5 @@ if plot_historical:
     cb1_hist = ColorbarBase(ax, cmap=cmap_hist, norm=norm_hist, orientation='horizontal')
     cb1_hist.set_label('Temperature (°C)' , fontsize=20)
     cb1_hist.ax.tick_params(labelsize=20)
-    plt.savefig('pangs/colorbar_historical.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'pangs/colorbar_historical_{variable}.png', dpi=300, bbox_inches='tight')
     plt.close(fig)
